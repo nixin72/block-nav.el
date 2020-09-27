@@ -1,3 +1,5 @@
+(defvar block-nav-center-after-scroll t)
+
 (defun block-nav-move-block (dir original-column)
   (interactive)
   (forward-line dir)
@@ -5,7 +7,9 @@
   (cond ((< original-column (current-column))
          (block-nav-move-block dir original-column))
         ((string-empty-p (current-line-contents))
-         (block-nav-move-block dir original-column))))
+         (block-nav-move-block dir original-column))
+        (t (when block-nav-center-after-scroll
+             (recenter)))))
 
 (defun block-nav-next-block ()
   (interactive)
@@ -20,7 +24,9 @@
   (forward-line dir)
   (back-to-indentation)
   (cond ((= original-column (current-column))
-         (block-nav-move-indentation-level dir original-column)))) 
+         (block-nav-move-indentation-level dir original-column))
+        (t (when block-nav-center-after-scroll
+             (recenter))))) 
   
 (defun block-nav-next-indentation-level ()
   (interactive)
