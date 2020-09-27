@@ -6,7 +6,7 @@
   (back-to-indentation)
   (cond ((< original-column (current-column))
          (block-nav-move-block dir original-column))
-        ((string-empty-p (current-line-contents))
+        ((string-empty-p (buffer-substring (line-beginning-position) (line-end-position)))
          (block-nav-move-block dir original-column))
         (t (when block-nav-center-after-scroll
              (recenter)))))
