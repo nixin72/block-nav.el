@@ -41,7 +41,8 @@
 ;;
 ;;; Code:
 
-(defvar block-nav-center-after-scroll t)
+(defvar block-nav-center-after-scroll nil)
+(defvar block-nav-move-skip-shallower nil)
 
 (defun block-nav-move-block (dir original-column)
   "
@@ -52,12 +53,21 @@
   (interactive)
   (forward-line dir)
   (back-to-indentation)
-  (cond ((< original-column (current-column))
-         (block-nav-move-block dir original-column))
-        ((string-empty-p (buffer-substring (line-beginning-position) (line-end-position)))
-         (block-nav-move-block dir original-column))
-        (t (when block-nav-center-after-scroll
-             (recenter)))))
+  (cond
+   ;; When line is empty, skip it
+   ((string-empty-p (buffer-substring (line-beginning-position) (line-end-position)))
+    (block-nav-move-block dir original-column))
+   ;; When line is shallower, skip it if enabled
+   ((> original-column (current-column))
+    (when block-nav-move-skip-shallower
+      (block-nav-move-block dir original-column)))
+   ;; When line is deeper, skip it
+   ((< original-column (current-column))
+    (block-nav-move-block dir original-column))
+   ;; Otherwise, stop at that line
+   (t
+    (when block-nav-center-after-scroll
+      (recenter)))))
 
 (defun block-nav-next-block ()
   "
@@ -84,10 +94,12 @@
   (interactive)
   (forward-line dir)
   (back-to-indentation)
-  (cond ((= original-column (current-column))
-         (block-nav-move-indentation-level dir original-column))
-        (t (when block-nav-center-after-scroll
-             (recenter))))) 
+  (cond
+   ((= original-column (current-column))
+    (block-nav-move-indentation-level dir original-column))
+   (t
+    (when block-nav-center-after-scroll
+      (recenter))))) 
   
 (defun block-nav-next-indentation-level ()
   "
