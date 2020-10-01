@@ -43,19 +43,24 @@
 
 (defvar block-nav-center-after-scroll nil
   "When not-nil, Emacs will recenter the current line after moving")
-(defvar block-nav-move-skip-shallower nil
+(defvar block-nav-move-skip-shallower t
   "
   When not-nil, calling `block-nav-next/previous-block` will 
   skip over lines with a shallower indentation than the current line.
   ")
 
 (defmacro do-while (cond &rest body)
+  "Runs the body once, then runs it again in a while loop with the condition."
   `(progn
      (progn . ,body)
      (while ,cond
        (progn . ,body))))
 
 (defun test-end-of-space (dir)
+  "
+  Returns true if the current line is either the first line in the file
+  or if the current line is the last line in the file or beyond the last line
+  "
   (or
    (and (> dir 0)
         (<= (count-lines (point-min) (point-max))
@@ -73,8 +78,8 @@
   (catch 'reached-end-of-file
    (let ((line-count 0))
      (do-while (or (if block-nav-move-skip-shallower
-                       (< original-column (current-column))
-                       (/= original-column (current-column)))
+                       (/= original-column (current-column))
+                       (< original-column (current-column)))
                    (string-empty-p (buffer-substring
                                     (line-beginning-position)
                                     (line-end-position))))
