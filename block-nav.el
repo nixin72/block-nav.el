@@ -55,6 +55,14 @@
      (while ,cond
        (progn . ,body))))
 
+(defun test-end-of-space (dir)
+  (or
+   (and (> dir 0)
+        (= (count-lines (point-min) (point-max))
+           (line-number-at-pos)))
+   (and (< dir 0)
+        (= 1 (line-number-at-pos)))))
+
 (defun block-nav-move-block (dir original-column)
   "
   Moves the cursor to the beginning of the next line that shares the same level of indentation.
@@ -70,6 +78,9 @@
                    (string-empty-p (buffer-substring
                                     (line-beginning-position)
                                     (line-end-position))))
+       (when (test-end-of-space dir)
+         (message "Reached last block of this indentation.")
+         (throw 'reached-end-of-file 0))
        (forward-line dir)
        (back-to-indentation)
        (setf line-count (+ 1 line-count)))
@@ -93,7 +104,10 @@
   the arguments necessary to go to the next block.
   "
   (interactive)
-  (block-nav-move-block 1 (current-column)))
+  (let ((move-lines
+         (save-excursion
+           (block-nav-move-block 1 (current-column)))))
+    (finish-move move-lines)))
 
 (defun block-nav-previous-block ()
   "
@@ -101,7 +115,10 @@
   the arguments necessary to go to the previous block.
   "
   (interactive)
-  (block-nav-move-block -1 (current-column)))
+  (let ((move-lines
+         (save-excursion
+           (block-nav-move-block -1 (current-column)))))
+    (finish-move (* move-lines -1))))
 
 (defun block-nav-move-indentation-level (dir original-column)
   "
@@ -117,6 +134,9 @@
                      (>= original-column (current-column)))
                 (and (< dir 0)
                      (<= original-column (current-column))))
+       (when (test-end-of-space dir)
+         (message "Deepest indentation reached")
+         (throw 'reached-end-of-file 0))
        (forward-line dir)
        (back-to-indentation)
        (setf line-count (+ 1 line-count)))
