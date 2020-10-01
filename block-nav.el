@@ -41,8 +41,13 @@
 ;;
 ;;; Code:
 
-(defvar block-nav-center-after-scroll nil)
-(defvar block-nav-move-skip-shallower nil)
+(defvar block-nav-center-after-scroll nil
+  "When not-nil, Emacs will recenter the current line after moving")
+(defvar block-nav-move-skip-shallower nil
+  "
+  When not-nil, calling `block-nav-next/previous-block` will 
+  skip over lines with a shallower indentation than the current line.
+  ")
 
 (defun block-nav-move-block (dir original-column)
   "
