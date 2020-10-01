@@ -140,11 +140,13 @@
                 (and (< dir 0)
                      (<= original-column (current-column))))
        (when (test-end-of-space dir)
-         (message "Deepest indentation reached")
+         (if (> dir 0)
+             (message "Deepest indentation reached")
+             (message "Shallowest indentation reached"))
          (throw 'reached-end-of-file 0))
        (forward-line dir)
        (back-to-indentation)
-       (setf line-count (+ 1 line-count)))
+       (setf line-count (+ dir line-count)))
      line-count)))
 
 (defun block-nav-next-indentation-level ()
@@ -164,6 +166,9 @@
   the arguments necessary to go back shallower in indentation.
   "
   (interactive)
-  (block-nav-move-indentation-level -1 (current-column)))
+  (let ((move-lines
+         (save-excursion
+           (block-nav-move-indentation-level -1 (current-column)))))
+    (finish-move move-lines)))
 
 (provide 'block-nav)
