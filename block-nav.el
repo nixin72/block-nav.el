@@ -49,6 +49,12 @@
   skip over lines with a shallower indentation than the current line.
   ")
 
+(defmacro do-while (cond &rest body)
+  `(progn
+     (progn . ,body)
+     (while ,cond
+       (progn . ,body))))
+
 (defun block-nav-move-block (dir original-column)
   "
   Moves the cursor to the beginning of the next line that shares the same level of indentation.
@@ -56,23 +62,30 @@
   Original column should be the value of `(current-column)` when the function is initially called.
   "
   (interactive)
-  (forward-line dir)
+  (catch 'reached-end-of-file
+   (let ((line-count 0))
+     (do-while (or (if block-nav-move-skip-shallower
+                       (< original-column (current-column))
+                       (/= original-column (current-column)))
+                   (string-empty-p (buffer-substring
+                                    (line-beginning-position)
+                                    (line-end-position))))
+       (forward-line dir)
+       (back-to-indentation)
+       (setf line-count (+ 1 line-count)))
+     line-count)))
+
+(defun finish-move (line-count)
+  "
+  Will take in a number of lines to move, then will jump forward/backwards
+  that many lines, and jump to the first non-whitespace character.
+  If block-nav-center-after-scroll is non-nil, then it will also recenter the
+  current line in the middle of the window.
+  "
+  (forward-line line-count)
   (back-to-indentation)
-  (cond
-   ;; When line is empty, skip it
-   ((string-empty-p (buffer-substring (line-beginning-position) (line-end-position)))
-    (block-nav-move-block dir original-column))
-   ;; When line is shallower, skip it if enabled
-   ((> original-column (current-column))
-    (when block-nav-move-skip-shallower
-      (block-nav-move-block dir original-column)))
-   ;; When line is deeper, skip it
-   ((< original-column (current-column))
-    (block-nav-move-block dir original-column))
-   ;; Otherwise, stop at that line
-   (t
-    (when block-nav-center-after-scroll
-      (recenter)))))
+  (when block-nav-center-after-scroll
+    (recenter)))
 
 (defun block-nav-next-block ()
   "
@@ -97,22 +110,28 @@
   Original column should be the value of `(current-column)` when the function is initially called.
   "
   (interactive)
-  (forward-line dir)
-  (back-to-indentation)
-  (cond
-   ((= original-column (current-column))
-    (block-nav-move-indentation-level dir original-column))
-   (t
-    (when block-nav-center-after-scroll
-      (recenter))))) 
-  
+  (catch 'reached-end-of-file
+   (let ((line-count 0))
+     (do-while (or
+                (and (> dir 0)
+                     (>= original-column (current-column)))
+                (and (< dir 0)
+                     (<= original-column (current-column))))
+       (forward-line dir)
+       (back-to-indentation)
+       (setf line-count (+ 1 line-count)))
+     line-count)))
+
 (defun block-nav-next-indentation-level ()
   "
   Calls `block-nav-move-indentation-level` with 
   the arguments necessary to go deeper in indentation.
   "
   (interactive)
-  (block-nav-move-indentation-level 1 (current-column)))
+  (let ((move-lines
+         (save-excursion
+           (block-nav-move-indentation-level 1 (current-column)))))
+    (finish-move move-lines)))
 
 (defun block-nav-previous-indentation-level ()
   "
