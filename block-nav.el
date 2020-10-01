@@ -58,8 +58,8 @@
 (defun test-end-of-space (dir)
   (or
    (and (> dir 0)
-        (= (count-lines (point-min) (point-max))
-           (line-number-at-pos)))
+        (<= (count-lines (point-min) (point-max))
+            (line-number-at-pos)))
    (and (< dir 0)
         (= 1 (line-number-at-pos)))))
 
