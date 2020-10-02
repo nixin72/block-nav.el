@@ -37,9 +37,11 @@
 ;;   (define-key evil-motion-state-map "K" 'block-nav-previous-block)
 ;;   (define-key evil-motion-state-map "L" 'block-nav-next-indentation-level)
 ;;
-;;   ;; Although this may not be desireable since it overrides vim keys you may use.
+;;   ;; Although this may not be desirable since it overrides vim keys you may use.
 ;;
 ;;; Code:
+
+(require 'subr-x)
 
 (defvar block-nav-center-after-scroll nil
   "When not-nil, Emacs will recenter the current line after moving.")
