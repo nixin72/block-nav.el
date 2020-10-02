@@ -43,9 +43,9 @@
 
 (require 'subr-x)
 
-(defvar block-nav-center-after-scroll nil
+(defcustom block-nav-center-after-scroll nil
   "When not-nil, Emacs will recenter the current line after moving.")
-(defvar block-nav-move-skip-shallower t
+(defcustom block-nav-move-skip-shallower t
   "When not-nil, calling `block-nav-next/previous-block` will skip over lines with a shallower indentation than the current line.")
 
 ;;; Helper functions
