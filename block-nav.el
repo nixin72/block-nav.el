@@ -91,7 +91,7 @@ When DIR is negative, move to the previous line."
                               (string-empty-p (buffer-substring
                                                (line-beginning-position)
                                                (line-end-position))))
-        (when (test-end-of-space dir)
+        (when (block-nav-test-end-of-space dir)
           (message "Reached last block of this indentation.")
           (throw 'reached-end-of-file 0))
         (forward-line dir)
@@ -111,11 +111,15 @@ When DIR is negative, move to the previous line with shallower indentation."
                            (and (> dir 0)
                                 (>= original-column (current-column)))
                            (and (< dir 0)
-                                (<= original-column (current-column))))
-        (when (test-end-of-space dir)
+                                (<= original-column (current-column)))
+                           (string-empty-p (buffer-substring
+                                            (line-beginning-position)
+                                            (line-end-position))))
+        (when (block-nav-test-end-of-space dir)
           (if (> dir 0)
               (message "Deepest indentation reached")
               (message "Shallowest indentation reached"))
+          ;; If line is empty, move to non-empty line.
           (throw 'reached-end-of-file 0))
         (forward-line dir)
         (back-to-indentation)
