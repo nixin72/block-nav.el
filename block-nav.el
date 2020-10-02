@@ -130,21 +130,25 @@ When DIR is negative, move to the previous line with shallower indentation."
 
 ;;; Interactive functions to wrap functionality
 
+;;;###autoload
 (defun block-nav-next-block ()
   "Move the cursor to the next line that shares the same level of indentation."
   (interactive)
   (block-nav-do-move (block-nav-move-block 1)))
 
+;;;###autoload
 (defun block-nav-previous-block ()
   "Move the cursor to previous line that shares the same level of indentation."
   (interactive)
   (block-nav-do-move (* (block-nav-move-block -1) -1)))
 
+;;;###autoload
 (defun block-nav-next-indentation-level ()
   "Move the cursor to the next line that has a deeper level of indentation."
   (interactive)
   (block-nav-do-move (block-nav-move-indentation-level 1)))
 
+;;;###autoload
 (defun block-nav-previous-indentation-level ()
   "Move the cursor to the previous line that has shallower level of indentation."
   (interactive)
