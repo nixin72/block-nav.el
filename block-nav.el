@@ -47,8 +47,17 @@
   "When not-nil, Emacs will recenter the current line after moving.")
 (defcustom block-nav-move-skip-shallower t
   "When not-nil, calling `block-nav-next/previous-block` will skip over lines with a shallower indentation than the current line.")
+(defcustom block-nav-skip-comment t
+  "When not-nil, calling `block-nav-next/previous-block` will skip over lines that are comments")
 
 ;;; Helper functions
+
+(defun block-nav-point-in-comment ()
+  "Returns non-nil if point is in a comment."
+  (let ((pos (point)))
+    (or (looking-at "\\s<")
+        (save-excursion
+          (nth 4 (syntax-ppss pos))))))
 
 (defmacro block-nav-do-while (cond &rest body)
   "Run the BODY once, then run it again in a while loop with the COND."
@@ -92,9 +101,11 @@ When DIR is negative, move to the previous line."
                                   (< original-column (current-column)))
                               (string-empty-p (buffer-substring
                                                (line-beginning-position)
-                                               (line-end-position))))
+                                               (line-end-position)))
+                              (and block-nav-skip-comment
+                                   (block-nav-point-in-comment)))
         (when (block-nav-test-end-of-space dir)
-          (message "Reached last block of this indentation.")
+          (message "Reached last navigable line.")
           (throw 'reached-end-of-file 0))
         (forward-line dir)
         (back-to-indentation)
@@ -116,7 +127,9 @@ When DIR is negative, move to the previous line with shallower indentation."
                                 (<= original-column (current-column)))
                            (string-empty-p (buffer-substring
                                             (line-beginning-position)
-                                            (line-end-position))))
+                                            (line-end-position)))
+                           (and block-nav-skip-comment
+                                (block-nav-point-in-comment)))
         (when (block-nav-test-end-of-space dir)
           (if (> dir 0)
               (message "Deepest indentation reached")
