@@ -46,18 +46,11 @@
 (defcustom block-nav-center-after-scroll nil
   "When not-nil, Emacs will recenter the current line after moving.")
 (defcustom block-nav-move-skip-shallower t
-  "When not-nil, calling `block-nav-next/previous-block` will skip over lines with a shallower indentation than the current line.")
+  "When not-nil, calling `block-nav-next/previous-block` will skip lines with a shallower indentation than the current line.")
 (defcustom block-nav-skip-comment t
-  "When not-nil, calling `block-nav-next/previous-block` will skip over lines that are comments")
+  "When not-nil, any block-nav function will skip lines that are comments.")
 
 ;;; Helper functions
-
-(defun block-nav-point-in-comment ()
-  "Returns non-nil if point is in a comment."
-  (let ((pos (point)))
-    (or (looking-at "\\s<")
-        (save-excursion
-          (nth 4 (syntax-ppss pos))))))
 
 (defmacro block-nav-do-while (cond &rest body)
   "Run the BODY once, then run it again in a while loop with the COND."
@@ -65,6 +58,19 @@
      (progn . ,body)
      (while ,cond
        (progn . ,body))))
+
+(defun block-nav-line-is-empty ()
+  "Returns non-nil if line is empty or only contains whitespace"
+  (interactive)
+  (back-to-indentation)
+  (= (point) (line-end-position)))
+
+(defun block-nav-point-in-comment ()
+  "Return non-nil if point is in a comment."
+  (let ((pos (point)))
+    (or (looking-at "\\s<")
+        (save-excursion
+          (nth 4 (syntax-ppss pos))))))
 
 (defun block-nav-test-end-of-space (dir)
   "Return non-nil if either of the following are true:
@@ -99,9 +105,7 @@ When DIR is negative, move to the previous line."
       (block-nav-do-while (or (if block-nav-move-skip-shallower
                                   (/= original-column (current-column))
                                   (< original-column (current-column)))
-                              (string-empty-p (buffer-substring
-                                               (line-beginning-position)
-                                               (line-end-position)))
+                              (block-nav-line-is-empty)
                               (and block-nav-skip-comment
                                    (block-nav-point-in-comment)))
         (when (block-nav-test-end-of-space dir)
@@ -125,9 +129,7 @@ When DIR is negative, move to the previous line with shallower indentation."
                                 (>= original-column (current-column)))
                            (and (< dir 0)
                                 (<= original-column (current-column)))
-                           (string-empty-p (buffer-substring
-                                            (line-beginning-position)
-                                            (line-end-position)))
+                           (block-nav-line-is-empty)
                            (and block-nav-skip-comment
                                 (block-nav-point-in-comment)))
         (when (block-nav-test-end-of-space dir)
