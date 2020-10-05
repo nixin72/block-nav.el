@@ -4,7 +4,7 @@
 ;;
 ;; Authors: Philip Dumaresq <phdumaresq@protonmail.com>
 ;; Maintainer: Philip Dumaresq <phdumaresq@protonmail.com>
-;; URL: http://github.com/nixin72/block-nav.el
+;; URL: https://github.com/nixin72/block-nav.el
 ;; Keywords: convenience
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "25.1"))
@@ -23,7 +23,7 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program. If not, see <http://www.gnu.org/licenses/>.
+;; along with this program. If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;; Provides a number of interactive functions for easily navigating
