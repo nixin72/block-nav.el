@@ -43,12 +43,24 @@
 
 (require 'subr-x)
 
+(defgroup block-nav nil
+  "Customization options for block-nav"
+  :group 'convenience)
+
 (defcustom block-nav-center-after-scroll nil
-  "When not-nil, Emacs will recenter the current line after moving.")
+  "When not-nil, Emacs will recenter the current line after moving."
+  :type 'boolean
+  :group 'block-nav)
+
 (defcustom block-nav-move-skip-shallower t
-  "When not-nil, calling `block-nav-next/previous-block` will skip lines with a shallower indentation than the current line.")
+  "When not-nil, calling `block-nav-next/previous-block` will skip lines with a shallower indentation than the current line."
+  :type 'boolean
+  :group 'block-nav)
+
 (defcustom block-nav-skip-comment t
-  "When not-nil, any block-nav function will skip lines that are comments.")
+  "When not-nil, any block-nav function will skip lines that are comments."
+  :type 'boolean
+  :group 'block-nav)
 
 ;;; Helper functions
 
