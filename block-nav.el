@@ -44,7 +44,7 @@
 (require 'subr-x)
 
 (defgroup block-nav nil
-  "Customization options for block-nav"
+  "Customization options for block-nav."
   :group 'convenience)
 
 (defcustom block-nav-center-after-scroll nil
@@ -72,10 +72,10 @@
        (progn . ,body))))
 
 (defun block-nav-line-is-empty ()
-  "Returns non-nil if line is empty or only contains whitespace"
+  "Return non-nil if line is empty or has only whitespace characters."
   (interactive)
   (back-to-indentation)
-  (= (point) (line-end-position)))
+  (eolp))
 
 (defun block-nav-point-in-comment ()
   "Return non-nil if point is in a comment."
@@ -98,7 +98,7 @@ DIR is less than 0 and you're at the first line of the file."
 (defun block-nav-do-move (line-count)
   "Given a LINE-COUNT, will move forwards/backwards that many lines.
 It will then place the cursor at the first non-whitespace character.
-If `block-nav-center-after-scroll' is non-nil, it will recenter the current line"
+If `block-nav-center-after-scroll' is non-nil, it will recenter the current line."
   (forward-line line-count)
   (back-to-indentation)
   (when block-nav-center-after-scroll
