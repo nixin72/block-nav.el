@@ -6,8 +6,8 @@
 This is a package for navigating through code based on indentation.
 I made this after seeing this post on [[https://old.reddit.com/r/emacs/comments/izwrlf/anyone_using_spatial_navigation_in_emacs/][reddit.]]
 
-Mostly it just looks like a really neat way of navigating code: 
-[[https://user-images.githubusercontent.com/22285063/94889555-96dba480-044a-11eb-9268-fae6063f51eb.gif][gif of the navigation in action]]
+Mostly it just looks like a really neat way of navigating code:
+[[gif of the navigation in action][file:https://user-images.githubusercontent.com/22285063/94889555-96dba480-044a-11eb-9268-fae6063f51eb.gif]]
 
 * Installing 
 This package has been submitted to melpa and is waiting for approval. 
